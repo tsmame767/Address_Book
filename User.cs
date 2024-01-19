@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Linq;
+
+namespace addressbook
+{
+    internal class User
+    {
+        public string name;
+        public string email;
+        public string city;
+        public string state;
+        public int contact;
+        public int zip;
+        public User(string n, string e, string c, string s, int cot, int z)
+        {
+            name = n;
+            email = e;
+            city = c;
+            state = s;
+            contact = cot;
+            zip = z;
+
+        }
+    }
+}

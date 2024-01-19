@@ -1,0 +1,15 @@
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.GeneratedMSBuildEditorConfig.editorconfig
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.AssemblyInfoInputs.cache
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.AssemblyInfo.cs
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.csproj.CoreCompileInputs.cache
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.sourcelink.json
+D:\c#\CS_Practice\addressbook\bin\Debug\net6.0\addressbook.exe
+D:\c#\CS_Practice\addressbook\bin\Debug\net6.0\addressbook.deps.json
+D:\c#\CS_Practice\addressbook\bin\Debug\net6.0\addressbook.runtimeconfig.json
+D:\c#\CS_Practice\addressbook\bin\Debug\net6.0\addressbook.dll
+D:\c#\CS_Practice\addressbook\bin\Debug\net6.0\addressbook.pdb
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.dll
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\refint\addressbook.dll
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.pdb
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\addressbook.genruntimeconfig.cache
+D:\c#\CS_Practice\addressbook\obj\Debug\net6.0\ref\addressbook.dll

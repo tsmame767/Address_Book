@@ -7,15 +7,15 @@ using System.Xml.Linq;
 
 namespace addressbook
 {
-    internal class User
+    public class User
     {
         public string name;
         public string email;
         public string city;
         public string state;
-        public int contact;
-        public int zip;
-        public User(string n, string e, string c, string s, int cot, int z)
+        public long contact;
+        public long zip;
+        public User(string n, string e, string c, string s, long cot, int z)
         {
             name = n;
             email = e;

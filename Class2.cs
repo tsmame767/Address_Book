@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -40,6 +41,37 @@ namespace addressbook
             }
             return false;
         }
+
+        public long checknuminp()
+        {
+            
+            long newdata=0;
+            int flag = 1;
+            while (true)
+            {
+                Console.WriteLine("Enter Contact: ");
+                long contact = Convert.ToInt64(Console.ReadLine());
+
+                bool invalid = Regex.IsMatch(Convert.ToString(contact), "^[6-9][0-9]{9}$");
+                if (invalid)
+                {
+                    newdata = contact;
+                    flag = 1;
+                    break;
+                }
+                else if (invalid == false)
+                {
+                    
+                    flag = 0;
+                    //newdata = contact;
+                }
+            }
+            if(flag == 1)
+            {
+                return newdata;
+            }
+            return 0;
+        }
         public void AddContact() //method for creating a new contact
         {
             string name="";
@@ -55,108 +87,120 @@ namespace addressbook
 
             // Data Collecting 
 
-            while (true)
+            int i = 1;
+            while (i <= 6)
             {
-                if (invalid)
+                switch (i)
                 {
-                    Console.WriteLine("Enter Name :");
-                    name= Convert.ToString(Console.ReadLine());
-                    invalid = !Regex.IsMatch(name, "^[A-Za-z]{2,}$");
-                }
-                else
-                {
-                    invalid = true;
-                    break;
-                    
-                }
-            }
-
-            while (true)
-            {
-                if (invalid)
-                {
-                    Console.WriteLine("Enter Email :");
-                    email = Convert.ToString(Console.ReadLine());
-                    invalid = !Regex.IsMatch(email, "^[A-Za-z0-9]{2,}[@][a-z]{2,}[.][a-z.]{2,}$");
-                }
-                else
-                {
-                    invalid = true;
-                    break;
-                }
-            }
-
-            while (true)
-            {
-                if (invalid)
-                {
-                    Console.WriteLine("Enter City :");
-                    city = Convert.ToString(Console.ReadLine());
-                    invalid = !Regex.IsMatch(city, "^[A-za-z]{2,}$");
-                }
-                else
-                {
-                    invalid = true;
-                    break;
-                }
-            }
-
-            while (true)
-            {
-                if (invalid)
-                {
-                    Console.WriteLine("Enter State :");
-                    state = Convert.ToString(Console.ReadLine());
-                    invalid = !Regex.IsMatch(state, "^[A-Za-z]{2,}$");
-                }
-                else
-                {
-                    invalid = true;
-                    break;
-                }
-            }
-
-            while (true)
-            {
-                if (invalid)
-                {
-                    Console.WriteLine("Enter Zip :");
-                    zip = Convert.ToInt32(Console.ReadLine());
-                    invalid = !Regex.IsMatch(Convert.ToString(zip), "^[0-9]{6}$");
-                }
-                else
-                {
-                    invalid = true;
-                    break;
-                }
-            }
-
-            while (true)
-            {
-                if (invalid)
-                {
-                    Console.WriteLine("Enter Contact :");
-                    contact = Convert.ToInt64(Console.ReadLine());
-                    while (true)
-                    {
-                        if (checkcont(contact))
+                    case 1:
+                        if (invalid)
                         {
-                            Console.WriteLine("This contact already exists\nenter the details again!: ");
-                            contact = Convert.ToInt64(Console.ReadLine());
+                            Console.WriteLine("enter name: ");
+                            name = Console.ReadLine();
+                            invalid = !Regex.IsMatch(name, "^[A-Za-z]{2,}$");
                         }
                         else
                         {
-                            invalid = !Regex.IsMatch(Convert.ToString(contact), "^[6-9][0-9]{9}$");
-                            break;
-                        }
+                            invalid = true;
+                            i++;
+                            //break;
 
-                    }
-                    
-                }
-                else
-                {
-                    invalid = true;
-                    break;
+                        }
+                        break;
+                    case 2:
+                        if (invalid)
+                        {
+                            Console.WriteLine("Enter Email: ");
+                            email = Console.ReadLine();
+                            invalid = !Regex.IsMatch(email, "^[A-Za-z0-9]{2,}[@][a-z]{2,}[.][.a-z]{2,}$");
+                        }
+                        else
+                        {
+                            invalid = true;
+                            i++;
+                            //break;
+                        }
+                        break;
+
+                    case 3:
+                        if (invalid)
+                        {
+                            Console.WriteLine("Enter City: ");
+                            city = Console.ReadLine();
+                            invalid = !Regex.IsMatch(city, "^[A-Za-z]{2,}$");
+                        }
+                        else
+                        {
+                            invalid = true;
+                            i++;
+                            //break;
+                        }
+                        break;
+
+                    case 4:
+                        if (invalid)
+                        {
+                            Console.WriteLine("Enter State: ");
+                            state = Console.ReadLine();
+                            invalid = !Regex.IsMatch(state, "^[A-Za-z]{2,}$");
+                        }
+                        else
+                        {
+                            invalid = true;
+                            i++;
+                            //break;
+                        }
+                        break;
+
+                    case 5:
+                        if (invalid)
+                        {
+                            Console.WriteLine("Enter Zip: ");
+                            zip = Convert.ToInt32(Console.ReadLine());
+                            invalid = !Regex.IsMatch(Convert.ToString(zip), "^[0-9]{6}$");
+                        }
+                        else
+                        {
+                            invalid = true;
+                            i++;
+                            //break;
+                        }
+                        break;
+
+                    case 6:
+                        //Console.WriteLine("enter contact: ");
+                        contact = checknuminp();
+
+                        while (true)
+                        {
+                            if (contact !=0 && checkcont(contact))
+                            {
+                                Console.WriteLine("enter data again: ");
+                                contact = checknuminp();
+                            }
+                            else if(checkcont(contact)==false)
+                            {
+                                break;
+                                
+                            }
+
+                        }
+                        i++;
+                        break;
+
+                
+                        
+                       /* else
+                        {
+                            invalid = true;
+                            i++;
+                            //break;
+                        */
+                        
+
+                    case 7:
+                        Console.WriteLine("passed switch");
+                        break;
                 }
             }
 

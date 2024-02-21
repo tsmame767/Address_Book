@@ -5,11 +5,18 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Data;
+using System.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
 
 namespace addressbook
 {
     public class booktest
     {
+        public int id;
+        //"Data Source=LAPTOP-SD20JSPU;Initial Catalog=ado_db;Integrated Security=True;";
+
+        public string constr = "Data Source = LAPTOP-SD20JSPU;Initial Catalog= Address_Book;Integrated Security= True";
 
         /*
         static Dictionary<int,string> Namedict = new Dictionary<int,string>();
@@ -20,10 +27,40 @@ namespace addressbook
         static Dictionary<int,int> Zipdict = new Dictionary<int,int>();
         */
 
-        public int ContactCount = 0;
+        //public int ContactCount = 0;
 
         public List<User> users = new List<User>(); //global list
 
+
+        public int getcurrid()
+        {
+            id = 0;
+            SqlConnection conn = null;
+            using(conn= new SqlConnection(constr))
+            {
+                string query = "select * from contacts";
+                SqlCommand cmd=new SqlCommand(query, conn);
+                conn.Open();
+                SqlDataReader dr= cmd.ExecuteReader();
+                
+
+                while (dr.Read())
+                {
+                    id = (int)dr["id"];
+                }
+                if (id == 0)
+                {
+                    return 1;
+                }
+                else
+                {
+                    return id + 1;
+                }
+            }
+            
+
+            return id;
+        }
         public void ListAdd(User Obj) //method for adding objects to the list
         {
             users.Add(Obj);    
@@ -72,7 +109,7 @@ namespace addressbook
             }
             return 0;
         }
-        public void AddContact() //method for creating a new contact
+        public string AddContact() //method for creating a new contact
         {
             string name="";
             string email="";
@@ -188,7 +225,8 @@ namespace addressbook
                         i++;
                         break;
 
-                
+
+                        
                         
                        /* else
                         {
@@ -204,7 +242,43 @@ namespace addressbook
                 }
             }
 
-            
+            SqlConnection connect = null;
+            try
+            {
+                using (connect = new SqlConnection(constr))
+                {
+                    
+                    string query = $"insert into contacts values({getcurrid()},'{name}','{email}','{city}','{state}',{zip},{contact})";
+                    Console.WriteLine(getcurrid());
+                    connect.Open();
+                    SqlCommand cmd = new SqlCommand(query, connect);
+                    int res = cmd.ExecuteNonQuery();
+
+                    if (res > 0)
+                    {
+                        return $"{res} rows inserted";
+                    }
+                    //if (connect.State == ConnectionState.Open)
+                    //{
+                    //    return "open ";
+                    //}
+                    //else
+                    //{
+                    //    return "close";
+                    //}
+
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine (ex.Message);
+            }
+            finally
+            {
+                connect.Close();
+            }
+
+            return "not inserted";
 
             /*
             Namedict.Add(contact, name);
@@ -218,23 +292,78 @@ namespace addressbook
 
 
             //Data Storing
-            User u1 = new User(name,email,city,state,contact,zip);
+            //User u1 = new User(name,email,city,state,contact,zip);
 
 
             //Object Adding to List
-            ListAdd(u1);
-            ContactCount++;
+            //ListAdd(u1);
+            //ContactCount++;
 
         }
 
 
+        
+        public void ShowDetail() {
 
-        public void ShowDetail()
-        {
+
+
+            SqlConnection connect = null;
+
+            using (connect = new SqlConnection(constr))
+            {
+                Console.WriteLine("\n\nchoose 1 : show all contact details :\nchoose 2 :  show detail of one contact  :");
+                int choose = Convert.ToInt32(Console.ReadLine());
+
+                if (choose == 2)
+                {
+                    Console.WriteLine("enter the contact number: ");
+                    long con= Convert.ToInt64(Console.ReadLine());
+                    string query = $"select * from contacts where contact = {con}";
+
+                    SqlCommand cmd = new SqlCommand(query, connect);
+                    connect.Open();
+                    SqlDataReader dr = cmd.ExecuteReader();
+
+                    // while (dr.Read())
+                    // {
+                    dr.Read();
+                    Console.WriteLine($"\n\nId= {dr["id"]}, name= {dr["name"]}, email= {dr["email"]}, city= {dr["city"]}, state= {dr["state"]}, contact= {dr["contact"]}");
+                   // }
+                }
+                else if(choose == 1) 
+                {
+                    string query = $"select * from contacts ";
+
+                    SqlCommand cmd = new SqlCommand(query, connect);
+                    connect.Open();
+                    SqlDataReader dr = cmd.ExecuteReader();
+                    int datacount = 0;
+
+                    
+                    while (dr.Read())
+                    {
+                        Console.WriteLine($"\n\nId = {dr["id"]} name = {dr["name"]} email = {dr["email"]} city = {dr["city"]} state = {dr["state"]} zip = {dr["zip"]} contact = {dr["contact"]}");
+                        datacount++;
+                    }
+
+                    if (datacount == 0)
+                    {
+                        Console.WriteLine("\n\nNo Data Available\n\n");
+                    }
+
+
+
+                }
+                else
+                {
+                    Console.WriteLine("\n\ninvalid choice\n\n");
+                }
+            }
+            /*
             Console.WriteLine("Enter the your contact number: ");
             long phone = Convert.ToInt64(Console.ReadLine());
 
-            //Console.WriteLine("name " + Namedict[phone]);
+            Console.WriteLine("name " + Namedict[phone]);
 
             int itr = 0;
 
@@ -264,14 +393,14 @@ namespace addressbook
             {
                 Console.WriteLine("no such details found");
             }
-
+            */
         }
 
-        public string CheckInstr(string inp, string comp)
+        public string CheckInstr(string inp, string oldstr)
         {
-            if (inp == "\n")
+            if (inp == "\n" || inp == "") 
             {
-                return comp;
+                return oldstr;
             }
             return inp;
         }
@@ -282,13 +411,84 @@ namespace addressbook
                 return comp;
             }
 
-            return Convert.ToInt32(inp);
+            return Convert.ToInt64(inp);
         }
         public void EditDetail()
         {
+
+            string name = "";
+            string email = "";
+            string city = "";
+            string state = "";
+            long contact = 0;
+            int zip = 0; 
+
+            SqlConnection conn = null;
+
             Console.WriteLine("Enter the your contact number: ");
             long phone = Convert.ToInt64(Console.ReadLine());
 
+            using (conn = new SqlConnection(constr))  // sql connection string
+            {
+                string query1 = $"select * from contacts where contact = {phone}";
+
+                SqlCommand cmd1 = new SqlCommand(query1, conn);
+                conn.Open();
+                SqlDataReader dr =  cmd1.ExecuteReader();
+
+                dr.Read();
+                User userobj = new User((string)dr["name"], (string)dr["email"], (string)dr["city"], (string)dr["state"], (long)dr["contact"], (int)dr["zip"]);
+
+
+                Console.WriteLine($"\n\nPrevious name {userobj.name}");
+                Console.WriteLine($"Previous email {userobj.email}");
+                Console.WriteLine($"Previous city {userobj.city}");
+                Console.WriteLine($"Previous state {userobj.state}");
+                Console.WriteLine($"Previous zip {userobj.zip}");
+                Console.WriteLine($"Previous contact {userobj.contact} \n\n");
+
+                Console.WriteLine("Edit Name: ");
+                userobj.name = CheckInstr(Console.ReadLine(), userobj.name);
+
+                Console.WriteLine("Edit Email: ");
+                userobj.email = CheckInstr(Console.ReadLine(), userobj.email);
+
+                Console.WriteLine("Edit City: ");
+                userobj.city = CheckInstr(Console.ReadLine(), userobj.city);
+                Console.WriteLine(userobj.city);
+
+                Console.WriteLine("Edit State: ");
+                userobj.state = CheckInstr(Console.ReadLine(), userobj.state);
+                Console.WriteLine(userobj.state);
+
+                Console.WriteLine("Edit Zip: ");
+                userobj.zip = CheckInp(Console.ReadLine(), userobj.zip);
+
+                Console.WriteLine("Edit Contact: ");
+                userobj.contact = CheckInp(Console.ReadLine(), userobj.contact);
+
+                Console.WriteLine($"\n\nupdated name {userobj.name}");
+                Console.WriteLine($"updated email {userobj.email}");
+                Console.WriteLine($"updated city {userobj.city}");
+                Console.WriteLine($"updated state {userobj.state}");
+                Console.WriteLine($"updated zip {userobj.zip}");
+                Console.WriteLine($"updated contact {userobj.contact}");
+                
+                conn.Close();
+                String query2 = $"update contacts set name = '{userobj.name}', email = '{userobj.email}',  city = '{userobj.city}', state = '{userobj.state}', zip = {userobj.zip}, contact={userobj.contact} where contact = {phone}";
+                SqlCommand cmd2 = new SqlCommand(query2, conn);
+                conn.Open();
+                int res = cmd2.ExecuteNonQuery();
+                if (res > 0)
+                {
+                    Console.WriteLine("updated data");
+                }
+            }
+
+            
+
+            
+            /*
             for (int i = 0; i < users.Count; i++)
             {
 
@@ -332,114 +532,140 @@ namespace addressbook
 
 
                 }
-            }
+            }*/
         }
 
         public void DeleteCont()
         {
-            Console.WriteLine("Enter the your contact number: ");
-            long phone = Convert.ToInt64(Console.ReadLine());
+            SqlConnection conn = null;
 
-            for (int i = 0; i < users.Count; i++)
+
+
+            using (conn = new SqlConnection(constr))
             {
+                Console.WriteLine("choose 1 to delete all rows :\nchoose 2 to delete one row : ");
+                int choose = Convert.ToInt32(Console.ReadLine());
+                conn.Open();
 
-                if (phone == users[i].contact)
+                SqlCommand cmd1=null;
+                int res = 0;
+                if (choose == 1)
                 {
-                    users.RemoveAt(i);
+                    string query1 = "Delete from contacts";
+                    cmd1 = new SqlCommand(query1, conn);
+                    
+                    res = cmd1.ExecuteNonQuery();
+
+                    if (res > 0)
+                    {
+                        Console.WriteLine($"Deleted {res} rows");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Not Data to Delete");
+                    }
+
                 }
+
+                else if (choose == 2)
+                {
+                    Console.WriteLine("Enter the your contact number: ");
+                    long phone = Convert.ToInt64(Console.ReadLine());
+
+                    string query2 = $"Delete from contacts where contact = {phone}";
+                    cmd1 = new SqlCommand();
+                    cmd1.CommandText = query2;
+                    cmd1.Connection = conn;
+                    res = cmd1.ExecuteNonQuery();
+
+                    if (res > 0)
+                    {
+                        Console.WriteLine("Deleted Row");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Not Data to Delete");
+                    }
+
+                }
+
             }
-            ContactCount--;
+                //for (int i = 0; i < users.Count; i++)
+                //{
+
+                //    if (phone == users[i].contact)
+                //    {
+                //        users.RemoveAt(i);
+                //    }
+                //}
+                //ContactCount--;
         }
 
         public void ViewPreferredCont()
         {
+
+            SqlConnection conn = null;
             //Console.WriteLine("Enter the your contact number: ");
             //int phone = Convert.ToInt32(Console.ReadLine());
 
             Console.WriteLine("Enter city or state: ");
             string Region = Console.ReadLine();
-            for (int i = 0; i < users.Count(); i++)
+
+            using (conn = new SqlConnection(constr))
             {
-                //if (users[i].contact == phone)
-                //{
-                    
-                    if (Region == users[i].city || Region == users[i].state)
-                    {
-                        Console.WriteLine($"Name : {users[i].name}");
-                        Console.WriteLine($"Email : {users[i].email}");
-                        Console.WriteLine($"City : {users[i].city}");
-                        Console.WriteLine($"State : {users[i].state}");
-                        Console.WriteLine($"Contact : {users[i].contact}");
-                        Console.WriteLine($"Zip : {users[i].zip}");
-                    }
-                //}
+                string query = $"select * from contacts where city = '{Region}' or state = '{Region}'";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+                SqlDataReader dr = cmd.ExecuteReader();
+
+                while(dr.Read())
+                {
+                    Console.WriteLine($"Id= {dr["id"]}, name= {dr["name"]}, email= {dr["email"]}, city= {dr["city"]}, state= {dr["state"]} contact= {dr["contact"]}\n\n");
+                }
             }
 
-        }
-        static void Main()
-        {
-            booktest obj = new booktest();
 
-            int choose;
 
-            do
-            {
-                Console.WriteLine("Welcome to Address Book Program\n");
 
-                Console.WriteLine("1. Add New Contact");
-                Console.WriteLine("2. Show Details Of A Contact");
-                Console.WriteLine("3. Edit A Contact");
-                Console.WriteLine("4. Delete A Contact");
-                Console.WriteLine("5. View All Contacts For A State or City");
-                Console.WriteLine("6. Get Count of Contacts");
-                Console.WriteLine("7. Exit\n");
-
-                choose = Convert.ToInt32(Console.ReadLine());
-
-                if (choose == 1)
-                {
-                    obj.AddContact();
-                }
-
-            else if( choose == 2)
-                {
-                    obj.ShowDetail();
-                }
-                /*for (int i = 0; i < users.Count; i++)
-                {
-                    Console.WriteLine(users[i].name);
-                }*/
-
-            else if(choose ==3)
-                {
-
+            //for (int i = 0; i < users.Count(); i++)
+            //{
+            //    //if (users[i].contact == phone)
+            //    //{
                     
-                    obj.EditDetail();
-                }
-
-            else if (choose == 4)
-                {
-                    obj.DeleteCont();
-
-                }
-
-            else if (choose == 5)
-                {
-                    obj.ViewPreferredCont();
-                }
-
-            else if (choose == 6)
-                {
-                    Console.WriteLine($"\n$There are {obj.ContactCount} Contacts in the Address Book");
-                }
-
-                
-            } while (choose != 7);
-
-
+            //        if (Region == users[i].city || Region == users[i].state)
+            //        {
+            //            Console.WriteLine($"Name : {users[i].name}");
+            //            Console.WriteLine($"Email : {users[i].email}");
+            //            Console.WriteLine($"City : {users[i].city}");
+            //            Console.WriteLine($"State : {users[i].state}");
+            //            Console.WriteLine($"Contact : {users[i].contact}");
+            //            Console.WriteLine($"Zip : {users[i].zip}");
+            //        }
+            //    //}
+            //}
 
         }
+
+        public int ContactCount()
+        {
+            SqlConnection conn = null;
+            using (conn = new SqlConnection(constr))
+            {
+                string query = $"select count(*) from contacts";
+                SqlCommand cmd = new SqlCommand(query, conn);
+                conn.Open();
+
+                int res = (int)cmd.ExecuteScalar();
+
+                return res;
+            }
+        }
+
+
+
     }
+
+    
 
 
 }

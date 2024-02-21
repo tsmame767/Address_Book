@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\c#\\CS_Practice\\addressbook\\addressbook.csproj": {}
+    "D:\\c#\\repos\\Address_Book\\addressbook.csproj": {}
   },
   "projects": {
-    "D:\\c#\\CS_Practice\\addressbook\\addressbook.csproj": {
+    "D:\\c#\\repos\\Address_Book\\addressbook.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\c#\\CS_Practice\\addressbook\\addressbook.csproj",
+        "projectUniqueName": "D:\\c#\\repos\\Address_Book\\addressbook.csproj",
         "projectName": "addressbook",
-        "projectPath": "D:\\c#\\CS_Practice\\addressbook\\addressbook.csproj",
+        "projectPath": "D:\\c#\\repos\\Address_Book\\addressbook.csproj",
         "packagesPath": "C:\\Users\\hp\\.nuget\\packages\\",
-        "outputPath": "D:\\c#\\CS_Practice\\addressbook\\obj\\",
+        "outputPath": "D:\\c#\\repos\\Address_Book\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\hp\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -39,6 +39,12 @@
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
+          "dependencies": {
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.6, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
